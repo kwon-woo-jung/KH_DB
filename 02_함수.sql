@@ -232,10 +232,120 @@ SELECT TO_DATE('800505', 'RRMMDD') FROM DUAL; -- 2049-05-05 00:00:00.000
 
 -- EMPLOYEE 테이블에서 각 직원이 태어난 생년월일 조회
 -- 사원이름, 생년월일 (1965년 10월 08일)
-SELECT TO_DATE('651008', 'RRMMDD') FROM DUAL; 
 SELECT * FROM EMPLOYEE;
-EMP_NAME
-FROM EMPLOYEE
+
+-- 621231-1985634
+
+
+-- 1) 주민번호에서 - 앞글자까지 추출
+SELECT EMP_NAME,
+SUBSTR( EMP_NO, 1, INSTR(EMP_NO, '-') -1)AS 생년월일
+FROM EMPLOYEE;
+
+
+
+-- 2) 추출한 생년월을 DATE 타입으로 변경 -> RR 패턴을 이용하여 1900 년도로 바꿈
+SELECT EMP_NAME,
+TO_CHAR(TO_DATE( SUBSTR( EMP_NO, 1, INSTR(EMP_NO, '-') - 1), 'RRMMDD' ),
+'YYYY년" MM"월" DD"일"' ) AS 생년월일
+FROM EMPLOYEE;
+
+--------------------------------------------------------------------------------------------
+
+
+
+
+
+-- 숫자 형변환
+-- TO_NUMBER(문자데이터, [포맷]) : 문자형 데이터를 숫자 데이터로 변경
+
+SELECT '1,000,000' + 500000 FROM DUAL;
+-- SQL Error [1722] [42000]: ORA-01722: 수치가 부적합합니다
+
+SELECT TO_NUMBER('1,000,000', '9,999,999') + 500000 FROM DUAL;
+-- 1,500,000
+
+
+-- NULL 처리 함수
+
+-- NVL(컬럼명, 컬럼값이 NULL일 때 바꿀 값) : NULL인 컬럼값을 다른값으로 변경
+
+/* NULL 과 산술 연산을 진행하면 결과는 무조건 NULL */
+SELECT EMP_NAME, SALARY, NVL(BONUS, 0), SALARY * NVL(BONUS, 0)
+FROM EMPLOYEE;
+
+
+-- NVL2(컬렴명, 바꿀값1, 바꿀값2)
+-- 해당 컬럼의 값이 있으면 바꿀값1로 변경,
+-- NULL 이면 바꿀값2 로 변경
+
+-- EMPLOYEE 테이블에서 보너스를 받으면 'O', 안받으면 'X' 조회
+SELECT EMP_NAME, NVL2(BONUS, 'O', 'X') "보너스 수령"
+FROM EMPLOYEE;
+
+-------------------------------------------------------------------------------------------------------------
+-- 선택 함수
+
+-- 여러가지 경우에 따라 알맞은 결과를 선택할 수 있음
+
+-- DECODE(계산식 | 컬럼명, 조건값1, 조건값2, 선택값2 ... , 아무것도 일치하지 않을때)
+-- 비교하고자 하는 값 또는 컬럼이 조건식과 같으면 결과 값 반환
+
+-- 직원의 성별 구하기
+SELECT EMP_NAME,DECODE( SUBSTR(EMP_NO, 8, 1), '1','남성', '2', '여성' ) 성별
+FROM EMPLOYEE; 
+
+
+SELECT * FROM EMPLOYEE;
+
+
+-- 직원의 급여를 인상하려고 한다
+-- 직급 코드가 J7인 직원은 20% 인상,
+-- 직급 코드가 J6인 직원은 15% 인상,
+-- 직급 코드가 J5인 직원은 10% 인상,
+-- 그 외 직급은 5% 인상.
+-- 이름, 직급코드, 급여, 인상률, 인상된 급여를 조회
+
+SELECT EMP_NAME, JOB_CODE, SALARY
+DECODE(JOB_CODE, 'J7', '20%',
+				'J6', '15%',
+				'J5', '10%',
+				'5%') 인상률,
+
+DECODE(JOB_CODE, '17', SALARY * 1.2,
+					'J6', SALARY * 1.15,
+					'J5', SALARY * 1.1,
+					SALARY * 1.05 ) "인상된 급여"
+FROM EMPLOYEE;
+
+-- CASE WHEN 조건식 THEN 결과값
+--		WHEN 조건식 TENH 결과값
+--		ELSE 결과값
+-- END
+
+-- 비교하고자 하는 값 또는 컬럼이 조건식과 같으면 결과값을 반환
+-- 조건은 범위 값 가능
+
+
+-- EMPLOYEE 테이블에서
+-- 급여가 500만원 이상이면 '대'
+-- 급여가 300만원 이상 500만원 미만이면 '중'
+-- 급여가 300만원 미만 '소' 로 조회
+-- 사원의 이름, 급여, 급여 받는 정도 조회
+
+SELECT EMP_NAME, SALARY
+CASE WHEN SALARY >= 5000000 THEN '대' -- IF
+	WHEN SALARY >= 30000000 THEN '중' -- ELSE IF
+	ELSE '소' -- ELSE
+END "급여 받는 정도"
+FROM EMPLOYEE;
+
+END "급여 받는 정도"
+FROM EMPLOYEE;
+
+
+-- 3) TO_CHAR를 이용해서 문자열로 변환 -> 1956년 10월 08일
+
 
 -- ADD_MONTHS(날짜, 숫자) : 날짜에 숫자만큼의 개월 수를 더함. (음수도 가능)
 

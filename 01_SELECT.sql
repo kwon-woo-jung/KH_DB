@@ -15,12 +15,12 @@
 -- SELECT 컬럼명 FROM 테이블명;
 --> 테이블의 특정 컬럼을 조회하겠다.
 
-SELECT * FROM EMPLOYEE;
+SELECT * FROM EMPLOYEE; -- 테이블의 특정 컬럼을 조회하기 위한 기본 구조
 -- '*' : ALL, 모든, 전부
 --> EMPLOYEE 테이블의 모든 컬럼을 조회하겠다.
 
 -- EMPLOYEE 테이블에서 사번, 직원이름, 휴대전화번호 컬럼만 조회
- SELECT EMP ID, EMP NAME, PHONE FROM EMPLOYEE;
+ SELECT EMP_ID , EMP_NAME, PHONE FROM EMPLOYEE; -- 특정 컬럼만 조회
 
 --------------------------------------------------
 
@@ -28,7 +28,7 @@ SELECT * FROM EMPLOYEE;
 -- 컬럼 값 : 테이블 내 한 칸 (== 한 셀)에 작성된 값 (DATA)
 
 -- EMPLOYEE 테이블에서 모든 사원의 사번, 이름, 급여, 연봉 조회
- SELECT EMPID, EMPNAME, SALARY, SALARY * 12 FROM EMPLOYEE;
+ SELECT EMP_ID , EMP_NAME , SALARY, SALARY * 12 FROM EMPLOYEE; -- 급여 * 12로 연봉을 계산
 
 SELECT EMP_NAME + 10 FROM EMPLOYEE;
 -- SQL Error [1722] [42000]: ORA-01722: 수치가 부적합합니다
@@ -57,8 +57,8 @@ SELECT SYSDATE FROM DUAL;
 
 
 -- 날짜 + 산술연산 ( + , - )
-SELECT SYSDATE - 1, SYSDATE, SYSDATE + 1
-FROM DUAL;
+SELECT SYSDATE - 1, SYSDATE, SYSDATE + 1 FROM DUAL; -- 시스템 날짜와의 차이를 구하는 방법
+
 -- 날짜에 +/- 연산 시 일 단위로 계산이 진행됨
 
 
@@ -73,8 +73,8 @@ FROM DUAL;
  * AS 생략 가능 
  * 
  * */
-SELECT SYSDATE - 1 "하루 전", SYSDATE AS 현재시간, SYSDATE + 1 내일  
-FROM DUAL;
+SELECT SYSDATE - 1 "하루 전", SYSDATE AS 현재시간, SYSDATE + 1 내일 FROM DUAL;
+-- 컬럼에 별칭을 부여해 가독성을 높임
 
 ---------------------------------------------------------------------
 
@@ -83,6 +83,7 @@ FROM DUAL;
 --> (필수) DB의 리터럴 표기법은 ''홑따옴표
 
 SELECT EMP_NAME, SALARY, '원 입니다' FROM EMPLOYEE;
+-- 리터럴을 사용해 결과에 텍스트 추가 
 
 ---------------------------------------------------
 
@@ -90,7 +91,7 @@ SELECT EMP_NAME, SALARY, '원 입니다' FROM EMPLOYEE;
 -- 주의사항 1) DISTINCT 구문은 SELECT 마다 딱 한번씩만 작성 가능
 -- 주의사항 2) DISTINCT 구문은 SELECT 제일 앞에 작성되어야 한다.
 
-SELECT DISTINCT DEPT_CODE, JOB_CODE FROM EMPLOYEE;
+SELECT DISTINCT DEPT_CODE, JOB_CODE FROM EMPLOYEE; -- 중복을 제거하고 조회할 때 사용
 
 ----------------------------------------------------
 
@@ -104,7 +105,7 @@ SELECT DISTINCT DEPT_CODE, JOB_CODE FROM EMPLOYEE;
 -- 사번, 이름, 급여, 부서코드를 조회해라 (SELECT 절)
 SELECT EMP_ID, EMP_NAME, SALARY, DEPT_CODE
 FROM EMPLOYEE
-WHERE SALARY > 3000000; 
+WHERE SALARY > 3000000; -- WHERE 절과 비교/논리 연산자를 사용한 조건 조회
 
 
 -- 비교 연산자 : >, <, >=, <= , = (같다), !=, (같지 않다)
@@ -142,7 +143,7 @@ WHERE SALARY < 3000000 OR SALARY >= 5000000;
 -- 300 만 이상, 600만 이하
 SELECT EMP_ID, EMP_NAME, SALARY, PHONE
 FROM EMPLOYEE
-WHERE SALARY BETWEEN 3000000 AND 6000000;
+WHERE SALARY BETWEEN 3000000 AND 6000000; -- WHERE 절과 비교/논리 연산자를 사용한 조건 조회
 
 -- NOT 연산자 사용 가능 BETWEEN 앞에 작성
 SELECT EMP_ID, EMP_NAME, SALARY, PHONE
