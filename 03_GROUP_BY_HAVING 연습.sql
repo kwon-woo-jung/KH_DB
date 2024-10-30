@@ -129,6 +129,22 @@ ORDER BY DEPT_CODE, JOB_CODE DESC;
 -- * HAVING 절 : 그룹함수로 구해 올 그룹에 대한 조건을 설정할 때 사용
 -- HAVING 컬럼명 | 함수식 비교연산자 비교값
 
+/*
+ * 5 : SELECT 컬럼명 AS 별칭, 계산식, 함수식
+ * 1 : FROM 테이블명
+ * 2 : WHERE 컬럼명 | 함수식 비교연산자 비교값
+ * 3 : GROUP BY 그룹을 묶을 컬럼명
+ * 4 : HAVING 그룹함수식 비교연산자 비교값
+ * 6 : ORDER BY 컬럼명 | 별칭 | 컬럼순번 정렬방식(ASC/DESC) [NULLS FIRST | LAST];
+ * 
+ * */
+
+-- EMPLOYEE 테이블에서
+-- 부서별 평균 급여가 3백만원 이상인 부서의
+-- 부서코드, 평균급여 조회
+-- 부서코드 오름차순
+
+
 
 
 
