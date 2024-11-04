@@ -41,6 +41,7 @@
  *
  * ** SAVEPOINT 지정 및 호출 시 이름에 ""(쌍따옴표) 붙여야함 !!! ***
  *
+ *
  * */
 
 
@@ -54,14 +55,14 @@ INSERT INTO DEPARTMENT2 VALUES('T2', '개발2팀', 'L2');
 INSERT INTO DEPARTMENT2 VALUES('T3', '개발3팀', 'L2');
 
 -- INSERT 확인
-SELECT * FROM DEPARTMENT2;
+SELECT * FROM EMPLOYEE2;
 
 --> DB에 반영된 것 처럼 보이지만
 -- 실제로 아직 DB에 반영된 것 아님
 -- 트랜잭션에 INSERT 3개 있음
 
 -- ROLLBACK 후 확인
-ROLLBACK; -- 마지막 커밋시점까지 되돌아감
+ROLLBACK;-- 마지막 커밋시점까지 되돌아감
 SELECT * FROM DEPARTMENT2;
 
 -- COMMIT 후 ROLLBACK이 되지는 지 확인
@@ -80,28 +81,30 @@ ROLLBACK;
 SELECT * FROM DEPARTMENT2;
 
 
-
 ---------------------------------------------------------------------------------------------
 
 -- SAVEPOINT 확인
 
 INSERT INTO DEPARTMENT2 VALUES('T4', '개발4팀', 'L2');
-SAVEPOINT "SP1" -- SAVEPOINT 지정
+SAVEPOINT "SP1"; -- SAVEPOINT 지정
 
 INSERT INTO DEPARTMENT2 VALUES('T5', '개발5팀', 'L2');
-SAVEPOINT "SP2" -- SAVEPOINT 지정
+SAVEPOINT "SP2"; -- SAVEPOINT 지정
 
 INSERT INTO DEPARTMENT2 VALUES('T6', '개발6팀', 'L2');
-SAVEPOINT "SP3" -- SAVEPOINT 지정
+SAVEPOINT "SP3"; -- SAVEPOINT 지정
 
 
 ROLLBACK TO "SP1";
 
 SELECT * FROM DEPARTMENT2; -- 개발4팀은 남음
 
+
+-- SQL Error [1086] [72000]: ORA-01086: 'SP2' 저장점이 이 세션에 설정되지 않았거나 부적합합니다.
+
 -- ROLLBACK TO "SP1" 구문 수행 시 SP2, SP3 SAVEPOINT도 삭제됨
 --ROLLBACK TO "SP2";
--- SQL Error 
+-- SQL Error [1086] [72000]: ORA-01086: 'SP2' 저장점이 이 세션에 설정되지 않았거나 부적합합니다.
 
 
 INSERT INTO DEPARTMENT2 VALUES('T5', '개발5팀', 'L2');
@@ -117,14 +120,36 @@ SELECT * FROM DEPARTMENT2;
 
 DELETE FROM DEPARTMENT2
 WHERE DEPT_ID LIKE 'T%';
+-- T로 시작하는게 포함된 단어
+
 
 
 -- SP2 지점까지 롤백
-ROLLBACK TO "SP2";
+ROLLBACK TO "SP2"; 
 SELECT * FROM DEPARTMENT2; -- 개발6팀만 롤백
+-- DELECT
+-- SP3
+-- 개발6팀
+---------------------------------------------------------------
+-- SP2
+-- 개발5팀
+-- SP1
+-- 개발4팀
+
+
 
 ROLLBACK TO "SP1";
 SELECT * FROM DEPARTMENT2; -- 개발5팀만 롤백
+-- DELECT
+-- SP3
+-- 개발6팀
+-- SP2
+-- 개발5팀
+---------------------------------------------------------------
+-- SP1
+-- 개발4팀
+
+
 
 -- 롤백 수행
 ROLLBACK; -- 마지막 커밋 시점(개발 4팀까지 롤백)
