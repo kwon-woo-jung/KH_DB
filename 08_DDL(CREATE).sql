@@ -26,11 +26,14 @@ SELECT * FROM USER_CONS_COLUMNS;
 -- 데이터의 전체 구조를 정의하는 언어로 주로 DB관리자, 설계자가 사용함.
 
 
+
+
 -- 객체 : 테이블(TABLE), 뷰(VIEW), 시퀀스(SEQUENCE),
 --        인덱스(INDEX), 사용자(USER),
 --        패키지(PACKAGE), 트리거(TRIGGER)
 --        프로시져(PROCEDURE), 함수(FUNCTION)
 --        동의어(SYNONYM)..
+
 
 
 ----------------------------------------------------------------------
@@ -85,6 +88,13 @@ SELECT * FROM USER_CONS_COLUMNS;
  * */
 
 -- MEMBER 테이블 생성
+ 
+/* CREATE TABLE 테이블명 (
+ *    컬럼명 자료형(크기),
+ *    컬럼명 자료형(크기),
+ */
+
+
 CREATE TABLE "MEMBER" (
 	MEMBER_ID VARCHAR2(20),
 	MEMBER_PWD VARCHAR2(20),
@@ -108,11 +118,19 @@ COMMENT ON COLUMN "MEMBER".MEMBER_NAME IS '회원 이름';
 COMMENT ON COLUMN "MEMBER".MEMBER_SSN IS '회원 주민등록번호';
 COMMENT ON COLUMN "MEMBER".ENROLL_DATE IS '회원 가입일';
 
+-- COMMENT ON COLUMN : 특정 컬럼에 주석을 추가할 때 사용합니다.
+-- "MEMEBER".MEMBER_ID : 주석을 추가할 대상인 컬럼을 지정합니다. "MEMBER"는 테이블 이름이고, MEMBER_ID는 컬럼 이름입니다.
+-- IS '회원 아이디' : MEMBER_ID 컬럼에 '회원 아이디' 라는 주석을 추가해서 간단하게 표현
 
 -- MEMBER 테이블에 샘플 데이터 삽입
 -- INSERT INTO 테이블명 VALUES (값1, 값2...)
-INSERT INTO "MEMBER" VALUES 
-('MEM01', '123ABC', '홍길동', '991213-1234567', DEFAULT);
+INSERT INTO "MEMBER" VALUES
+('MEM01', '123ABC', '홍길동', '991213-1234567', SYSDATE);
+
+-- * INSERT/UPDATE 시 컬럼 값으로 DEFAULT 를 작성하면
+-- 테이블 생성 시 해당 컬럼에 지정된 DEFAULT 값으로 삽입이 된다!
+
+-- VALUES: 삽입한 데이터를 괄호 안에 순서대로 입력하고, 이 순서는 테이블의 컬럼 순서와 일치해야 합니다.
 
 -- * INSERT/UPDATE 시 컬럼 값으로 DEFAULT 를 작성하면
 --   테이블 생성 시 해당 컬럼에 지정된 DEFAULT 값으로 삽입이 된다! *
@@ -126,27 +144,26 @@ COMMIT;
 
 -- 추가 샘플 데이터 삽입
 -- 가입일 -> SYSDATE 로 삽입
-INSERT INTO "MEMBER" VALUES 
-('MEM02', 'QWER1234', '김영희', '000123-2233445', SYSDATE);
+INSERT INTO "MEMBER" VALUES
+('MEM02', 'QWER1234', '김영희', '000123-2233445', DEFAULT);
 
 
 -- 가입일 -> INSERT 시 미작성 하는 경우 DEFAULT 값이 반영되는지 확인
 -- INSERT INTO 테이블명 (컬럼명1, 컬럼명2) 
 -- VALUES(값1, 값2);
 
-INSERT INTO "MEMBER" (MEMBER_ID, MEMBER_PWD, MEMBER_NAME) 
-VALUES ('MEM03', '1Q2W3E', '이지연');
+INSERT INTO "MEMBER" (MEMBER_ID, MEMBER_PWD, MEMBER_NAME)
+VALUES('MEM03', '1Q2W3E', '이지연');
 
 
 
 -- ** JDBC 에서 날짜를 입력 받았을 때 삽입하는 방법 **
 -- '2024-10-15 12:20:30' 이런식의 문자열이 넘어온 경우...
 
-INSERT INTO "MEMBER" VALUES 
+INSERT INTO "MEMBER" VALUES
 ('MEM04', 'PASS04', '김길동', '931201-1234567', 
-TO_DATE('2024-10-15 12:20:30', 'YYYY-MM-DD HH24:MI:SS')
+TO_DATE('2024-11-08 16:46:30', 'YYYY-MM-DD HH24:MI:SS')
 );
-
 SELECT * FROM MEMBER;
 
 COMMIT;
@@ -157,14 +174,16 @@ COMMIT;
 -- MEMBER2 테이블(아이디, 비밀번호, 이름, 전화번호)
 
 CREATE TABLE MEMBER2 (
-	MEMBER_ID VARCHAR2(20),
-	MEMBER_PWD VARCHAR2(20),
-	MEMBER_NAME VARCHAR2(30),
-	MEMBER_TEL NUMBER
+		MEMBER_ID VARCHAR2(20),
+		MEMBER_PWD VARCHAR2(20),
+		MEMBER_NAME VARCHAR2(30),
+		MEMBER_TEL NUMBER
 );
 
 
-INSERT INTO MEMBER2 VALUES('MEM01', 'PASS01', '고길동', 01012341234);
+
+INSERT INTO MEMBER2 VALUES
+('MEM02', 'QWER1234', '고길동', 01012341234);
 
 SELECT * FROM MEMBER2;
 
@@ -203,6 +222,8 @@ COMMIT;
 
 -- * 컬럼레벨 : 테이블 생성 시 컬럼을 정의하는 부분에 작성하는 것
 
+	-- 테이블레벨 
+
 CREATE TABLE USER_USED_NN(
 	USER_NO NUMBER NOT NULL, -- 사용자 번호 (모든 사용자는 사용자 번호가 있어야 한다)
 					--> 컬럼 레벨 제약조건 설정
@@ -216,6 +237,8 @@ CREATE TABLE USER_USED_NN(
 );
 
 
+
+
 INSERT INTO USER_USED_NN
 VALUES (1, 'USER01', 'PASS01', '홍길동', '남자', '010-1234-5678', 'hong123@kh.or.kr');
 
@@ -223,15 +246,15 @@ INSERT INTO USER_USED_NN
 VALUES (NULL, 'USER01', 'PASS01', '홍길동', '남자', '010-1234-5678', 'hong123@kh.or.kr');
 
 -- SQL Error [1400] [23000]: 
--- ORA-01400: NULL을 ("KH_CMH"."USER_USED_NN"."USER_NO") 안에 삽입할 수 없습니다
+-- ORA-01400: NULL을 ("KH_KWJ"."USER_USED_NN"."USER_NO") 안에 삽입할 수 없습니다
 
---> NOT NULL 제약조건 위배되어 오류발생
-
-
--------------------------------------------------------------------------------
+--> 228번에 있는 NOT NULL 제약조건을 위배해서 오류 발생
 
 
--- 2. UNIQUE 제약조건
+--------------------------------------------------------------------------------
+
+
+-- 2. UNIQUE 제약조건 
 -- 컬럼에 입력값에 대해서 중복을 제한하는 제약조건
 -- 컬럼 레벨에서 설정가능, 테이블 레벨에서 설정가능
 -- 단, UNIQUE 제약조건이 설정된 컬럼에 NULL 값은 중복 삽입 가능.
@@ -250,30 +273,31 @@ DROP TABLE USER_USED_UK;
 CREATE TABLE USER_USED_UK(
 	USER_NO NUMBER NOT NULL,
 	-- USER_ID VARCHAR2(20) UNIQUE, -- 컬럼레벨 (제약조건명 미지정)
-	-- USER_ID VARCHAR2(20) CONSTRAINT USER_ID_U UNIQUE, -- 컬럼레벨 (제약조건명 지정)
-	USER_ID VARCHAR2(20), -- 회원 아이디 (UNIQUE)
-	USER_PWD VARCHAR2(20),
+	USER_ID VARCHAR2(20), -- 회원 아이디 (UNIQUE) 
+	USER_PWD VARCHAR2(20), 
 	USER_NAME VARCHAR2(30),
 	GENDER VARCHAR2(10),
 	PHONE VARCHAR2(30),
-	EMAIL VARCHAR2(50),
+	EMAIL VARCHAR2(50)
 	-- 테이블 레벨
 	--UNIQUE(USER_ID) -- 테이블 레벨 (제약조건명 미지정)
 	CONSTRAINT USER_ID_U UNIQUE(USER_ID) -- 테이블 레벨 (제약조건명 지정)
 );
 
 
-INSERT INTO USER_USED_UK
-VALUES (1, 'USER01', 'PASS01', '홍길동', '남자', '010-1234-5678', 'hong123@kh.or.kr');
+
 
 INSERT INTO USER_USED_UK
 VALUES (1, 'USER01', 'PASS01', '홍길동', '남자', '010-1234-5678', 'hong123@kh.or.kr');
--- SQL Error [1] [23000]: 
--- ORA-00001: 무결성 제약 조건(KH_CMH.USER_ID_U)에 위배됩니다
+-- SQL Error [1] [23000]:
+-- QRA-00001: 무결성 제약 조건(KH.CMH.USER_ID_U)에 위배됩니다
 
 INSERT INTO USER_USED_UK
 VALUES (1, NULL, 'PASS01', '홍길동', '남자', '010-1234-5678', 'hong123@kh.or.kr');
---> 아이디에 NULL 값 삽입 가능 확인
+--> 아이디에 null 값 삽입 가능 확인
+
+INSERT INTO USER_USED_UK
+VALUES(1, NULL, 'PASS01', '홍길동', '남자', '010-1234-5678', 'hong123@kh.or.kr');
 
 INSERT INTO USER_USED_UK
 VALUES (1, NULL, 'PASS01', '홍길동', '남자', '010-1234-5678', 'hong123@kh.or.kr');
@@ -439,10 +463,11 @@ VALUES (3, NULL, 'PASS01', '홍길동', '남자', '010-1234-5678', 'hong123@kh.o
 -- 참조할 테이블의 참조할 컬럼명이 생략되면, PRIMARY KEY로 설정된 컬럼이 자동 참조할 컬럼이 됨.
 
 
+
 -- 부모테이블 / 참조할 테이블 / 레퍼런스 테이블 (대상이되는 테이블)
-CREATE TABLE USER_GRADE(
-	GRADE_CODE NUMBER PRIMARY KEY, -- 등급 번호
-	GRADE_NAME VARCHAR2(30) NOT NULL -- 등급명
+CREATE TABLE USER_GRADE
+		GRADE_CODE NUMBER PRIMARY KEY, -- 등급 번호
+		GRADE_NAME VARCHAR2(30) NOT NULL -- 등급명
 );
 
 INSERT INTO USER_GRADE VALUES(10, '일반회원');
@@ -454,26 +479,28 @@ SELECT * FROM USER_GRADE;
 
 -- 자식테이블 (USER_GRADE 테이블을 (참조하여)사용할 테이블)
 CREATE TABLE USER_USED_FK(
-	USER_NO NUMBER PRIMARY KEY, -- 사용자 번호(고유한 번호 : 중복 X / NULL X)
-	USER_ID VARCHAR2(20) UNIQUE, -- 사용자 아이디 (중복 X)
-	USER_PWD VARCHAR2(20) NOT NULL, -- 사용자 비밀번호(NULL X)
-	USER_NAME VARCHAR2(30),
-	GENDER VARCHAR2(10),
-	PHONE VARCHAR2(30),
-	EMAIL VARCHAR2(50),
-	GRADE_CODE NUMBER CONSTRAINT GRADE_CODE_FK REFERENCES USER_GRADE /*(GRADE_CODE)*/ -- 컬럼 레벨
-												-- 컬럼명 미작성 시 USER_GRADE 테이블의 PK를 자동참조
-	-- 테이블레벨
-	-- , CONSTRAINT GRADE_CODE_FK FOREIGN KEY(GRADE_CODE) REFERENCES USER_GRADE 
-						--> FOREIGN KEY 라는 단어는 테이블 레벨에서만 사용!
+		USER_NO NUMBER PRIMARY KEY, -- 사용자 번호(고유한 번호 : 중복 X / NULL X)
+		USER_ID VARCHAR2(20) UNIQUE,
+		USER_PWD VARCHAR2(20) NOT NULL,
+		USER_NAME VARCHAR2(30),
+		GENDER VARCHAR2(10),
+		PHONE VARCHAR2(30),
+		EMAIL VARCHAR2(50),
+		GRADE_CODE NUMBER CONSTRAINT GRADE_CODE_FK REFERENCES USER_GRADE /*(GRADE_CODE)*/ -- 컬럼 레벨
+																							-- 컬럼명 지막성 시 USER_GRADE 테이블의 PK를 자동참조
+		-- 테이블레벨
+		-- , CONSTRAINT GRADE_CODE_FK FOREIGN KEY(GRADE_CODE) REFERENCES USER_GRADE
+												--> FOREIGN KEY 라는 단어는 테이블 레벨에서만 사용!
 );
+
+
 
 
 SELECT * FROM USER_USED_FK;
 
 
 INSERT INTO USER_USED_FK
-VALUES (1, 'USER01', 'PASS01', '홍길동', '남자', '010-1234-5678', 'hong123@kh.or.kr', 10);
+VALUES (1, 'USER01', 'PASS01', '홍길동', '남자', '010-5678-5678', 'lee123@kh.or.kr', 10);
 -- USER_GRADE (부모테이블/참조테이블)에 10 이라는 GRADE_CODE 가 존재하므로 가능
 
 
@@ -493,7 +520,7 @@ VALUES (4, 'USER04', 'PASS04', '안중근', '남자', '010-2222-1111', 'ahn123@k
 
 
 INSERT INTO USER_USED_FK
-VALUES (5, 'USER05', 'PASS05', '윤봉길', '남자', '010-6666-7777', 'yoon123@kh.or.kr', 50);
+VALUES (5, 'USER05', 'PASS05' '윤봉길', '남자', '010-6666-7777', 'yoon123@kh.or.kr', 50);
 --> SQL Error [2291] [23000]: 
 -- ORA-02291: 무결성 제약조건(KH_CMH.GRADE_CODE_FK)이 위배되었습니다- 부모 키가 없습니다
 --> 외래키 제약조건에 위배되어 오류 발생.
@@ -526,44 +553,44 @@ ROLLBACK; -- 되돌리기.. 20 돌아옴
 -- 2) ON DELETE SET NULL : 부모키 삭제 시 자식키를 NULL로 변경하는 옵션
 
 CREATE TABLE USER_GRADE2(
-	GRADE_CODE NUMBER PRIMARY KEY, -- 등급 번호
-	GRADE_NAME VARCHAR2(30) NOT NULL -- 등급명
+		GRADE_CODE NUMBER PRIMARY KEY, -- 등급 번호
+		GRADE_NAME VARCHAR2(30) NOT NULL -- 등급명
 );
 
 INSERT INTO USER_GRADE2 VALUES(10, '일반회원');
-INSERT INTO USER_GRADE2 VALUES(20, '우수회원');
-INSERT INTO USER_GRADE2 VALUES(30, '특별회원');
+INSERT INTO USER_GRADE2 VALUES(10, '우수회원');
+INSERT INTO USER_GRADE2 VALUES(10, '특별회원');
 
 SELECT * FROM USER_GRADE2;
 
+
 -- ON DELETE SET NULL 삭제옵션이 적용된 자식 테이블 생성
 CREATE TABLE USER_USED_FK2(
-	USER_NO NUMBER PRIMARY KEY, 
-	USER_ID VARCHAR2(20) UNIQUE, 
-	USER_PWD VARCHAR2(20) NOT NULL,
-	USER_NAME VARCHAR2(30),
-	GENDER VARCHAR2(10),
-	PHONE VARCHAR2(30),
-	EMAIL VARCHAR2(50),
-	GRADE_CODE NUMBER CONSTRAINT GRADE_CODE_FK2 REFERENCES USER_GRADE2 ON DELETE SET NULL
-																		/* 삭제옵션*/
-);
+		USER_NO NUMBER PRIMARY KEY,
+		USER_ID VARCHAR2(20) UNIQUE,
+		USER_PWD VARCHAR2(20) NOT NULL,
+		USER_NAME VARCHAR2(30),
+		GENDER VARCHAR2(10),
+		PHONE VARCHAR2(30),
+		EMAIL VARCHAR2(50),
+		GRADE_CODE NUMBER CONSTRAINT GRADE_CODE_FK2 REFERNCES USER_GRADE2 ON DELETE SET NULL
+																												/* 삭제옵션 */
+);																				
+
+INSERT INTO USER_USED_FK2
+VALUES(1, 'USER01', 'PASS01', '홍길동', '남자', '010-1234-5678', 'hong123@kh.or.kr', 10);
 
 
 INSERT INTO USER_USED_FK2
-VALUES (1, 'USER01', 'PASS01', '홍길동', '남자', '010-1234-5678', 'hong123@kh.or.kr', 10);
+VALUES(2, 'USER02', 'PASS02', '이순신', '남자', '010-5678-5678', 'lee123@kh.or.kr', 10);
 
 
 INSERT INTO USER_USED_FK2
-VALUES (2, 'USER02', 'PASS02', '이순신', '남자', '010-5678-5678', 'lee123@kh.or.kr', 10);
+VALUES(3, 'USER03', 'PASS03', '유관순', '여자', '010-1234-5678', 'yoo123@kh.or.kr', 30);
 
 
 INSERT INTO USER_USED_FK2
-VALUES (3, 'USER03', 'PASS03', '유관순', '여자', '010-3333-1111', 'yoo123@kh.or.kr', 30);
-
-
-INSERT INTO USER_USED_FK2
-VALUES (4, 'USER04', 'PASS04', '안중근', '남자', '010-2222-1111', 'ahn123@kh.or.kr', null);
+VALUES(4, 'USER04', 'PASS04', '안중근', '남자', '010-1234-5678', 'ahn123@kh.or.kr', null);
 
 
 
@@ -588,13 +615,14 @@ SELECT * FROM USER_USED_FK2; -- 10을 사용하고있던 자식 레코드 값이
 -- 부모키 삭제 시 값을 사용하고있던 자식 테이블의 컬럼에 해당하는 행이 삭제됨
 
 CREATE TABLE USER_GRADE3(
-	GRADE_CODE NUMBER PRIMARY KEY, -- 등급 번호
-	GRADE_NAME VARCHAR2(30) NOT NULL -- 등급명
+		GRADE_CODE NUMBER PRIMARY KEY, -- 등급 번호
+		GRADE_NAME VARCHAR2(30) NOT NULL -- 등급명
 );
 
 INSERT INTO USER_GRADE3 VALUES(10, '일반회원');
 INSERT INTO USER_GRADE3 VALUES(20, '우수회원');
 INSERT INTO USER_GRADE3 VALUES(30, '특별회원');
+
 
 SELECT * FROM USER_GRADE3;
 
@@ -611,7 +639,6 @@ CREATE TABLE USER_USED_FK3(
 	CONSTRAINT GRADE_CODE_FK3 FOREIGN KEY(GRADE_CODE) 
 	REFERENCES USER_GRADE3(GRADE_CODE) ON DELETE CASCADE
 );
-
 
 INSERT INTO USER_USED_FK3
 VALUES (1, 'USER01', 'PASS01', '홍길동', '남자', '010-1234-5678', 'hong123@kh.or.kr', 10);
@@ -675,7 +702,7 @@ VALUES (1, 'USER01', 'PASS01', '홍길동', '남', '010-1234-5678', 'hong123@kh.
 
 INSERT INTO USER_USED_CHECK
 VALUES (2, 'USER02', 'PASS02', '유관순', '여', '010-1234-5678', 'hong123@kh.or.kr');
--- 가능
+ -- 가능
 
 INSERT INTO USER_USED_CHECK
 VALUES (3, 'USER03', 'PASS03', '신사임당', '여자', '010-1234-5678', 'hong123@kh.or.kr');
